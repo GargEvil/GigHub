@@ -1,0 +1,84 @@
+﻿@model IEnumerable<GigHub.Models.Gig>
+@{
+    ViewBag.Title = "Mine";
+}
+
+<h2>My Upcoming Gigs</h2>
+
+<ul class="gigs" style="list-style:none; margin-top:60px;">
+    @foreach (var gig in Model)
+    {
+        <li style="position: relative; margin-bottom: 30px;">
+            <div class="date" style="background:red; color:white; text-align:center; width:60px;border-radius:8px;">
+                <div class="month" style="text-transform: uppercase;font-size: 14px;padding: 2px 6px;">
+                    @gig.DateTime.ToString("MMM")
+                </div>
+                <div class="day" style="background:#f7f7f7;color:#333;font-size:20px;padding:6px 12px;">
+                    @gig.DateTime.ToString("d ")
+                </div>
+            </div>
+            <div class="details" style=" position:absolute; top:0; left:70px;">
+                <span class="artist" style="font-weight:bold; display:block;">
+                    @gig.Venue
+                   
+                </span>
+                <span class="genre" style="font-size:15px;">
+                    @gig.Genre.Name
+                </span>
+              <div class="actions">
+                  <a href="@Url.Action("Edit","Gigs", new { id=gig.Id})">
+                  Edit</a> | 
+                  <a href="#" class="js-cancel-gig" data-gig-id="@gig.Id">Cancel</a>
+              </div> 
+            </div>
+        </li>
+    }
+</ul>
+@section scripts
+{
+    <script>
+        $(document).ready(function () {
+            $(".js-cancel-gig").click(function (e) {
+                var link = $(e.target);
+
+                var dialog = bootbox.dialog({
+                    title: 'Confirm',
+                    message: "Are you sure you want to cancel this gig?",
+                    size: 'lg',
+                    buttons: {
+                        no: {
+                            label: "No",
+                            className: 'btn-default',
+                            callback: function () {
+                                bootbox.hideAll();
+                            }
+                        },
+                        yes: {
+                            label: "Yes",
+                            className: 'btn-danger',
+                            callback: function () {
+                                $.ajax({
+                                    url: "/api/gigs/" + link.attr("data-gig-id"),
+                                    method: "DELETE"
+                                })
+                                    .done(function () {
+                                        link.parents("li").fadeOut(function () {
+                                            $(this).remove();
+                                        });
+                                    })
+                                    .fail(function () {
+                                        alert("Something failed!");
+                                    });
+                            }
+                        }
+                       
+                    }
+                });
+
+             
+
+               
+            });
+        });
+    </script>
+}
