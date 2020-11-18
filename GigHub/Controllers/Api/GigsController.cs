@@ -24,8 +24,9 @@ namespace GigHub.Api
         public IHttpActionResult Cancel(int id)
         {
             var userId = User.Identity.GetUserId();
+
             var gig = _context.Gigs
-                .Include(g=>g.Attendances.Select(a=>a.Attendee))
+                .Include(g => g.Attendances.Select(a => a.Attendee))
                 .Single(g => g.Id == id && g.ArtistId == userId);
 
             if (gig.IsCanceled)

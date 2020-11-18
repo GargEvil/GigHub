@@ -175,6 +175,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataAccess\AttendanceManager.cs" />
+    <Compile Include="DataAccess\GigsManager.cs" />
     <Compile Include="Dtos\GenreDto.cs" />
     <Compile Include="Dtos\GigDto.cs" />
     <Compile Include="Controllers\Api\GigsController.cs" />

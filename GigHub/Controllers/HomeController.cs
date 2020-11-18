@@ -6,6 +6,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.Data.Entity;
 using GigHub.ViewModels;
+using GigHub.DataAccess;
 
 namespace GigHub.Controllers
 {
@@ -20,44 +21,23 @@ namespace GigHub.Controllers
 
         public ActionResult Index(string query=null)
         {
-            var upcomingGigs = _context.Gigs
-                .Include(g => g.Artist)
-                .Include(g=>g.Genre)
-                .Where(g => g.DateTime > DateTime.Now && !g.IsCanceled);
+            var upcomingGigs = GigsManager.GetUpcoming();
 
-
-            if(!String.IsNullOrWhiteSpace(query))
+            if (!String.IsNullOrEmpty(query))
             {
-                upcomingGigs = upcomingGigs
-                    .Where(g =>
-                            g.Artist.Name.Contains(query) ||
-                            g.Genre.Name.Contains(query) ||
-                            g.Venue.Contains(query));
+                upcomingGigs = GigsManager.QueryGigs(query);
             }
 
             var viewModel = new GigsViewModel
             {
                 UpcomingGigs = upcomingGigs,
-                ShowActions=User.Identity.IsAuthenticated,
-                Heading="Upcoming Gigs",
-                SearchTerm=query
+                ShowActions = this.User.Identity.IsAuthenticated,
+                Heading = "Upcoming Gigs",
+                SearchTerm = query
             };
 
             return View("Gigs", viewModel);
         }
 
-        public ActionResult About()
-        {
-            ViewBag.Message = "Your application description page.";
-
-            return View();
-        }
-
-        public ActionResult Contact()
-        {
-            ViewBag.Message = "Your contact page.";
-
-            return View();
-        }
     }
 }
